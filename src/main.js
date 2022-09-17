@@ -28,7 +28,11 @@ async function update() {
 function leaderboardString(data) {
     let str = `Last updated at ${Tools.dateStr(new Date())}\n`;
     const table = [ ['Username', 'Acct Value'] ];
-    for(const symbol in data.tickers) table[0].push(symbol);
+    const align = ['l', 'r'];
+    for(const symbol in data.tickers) {
+        table[0].push(symbol);
+        align.push('r');
+    }
     for(const trader of data.traders) {
         const row = [trader.username.substring(0, trader.username.length-5), Price.format(trader.accountValue)];
         for(const symbol in data.tickers) {
@@ -37,7 +41,7 @@ function leaderboardString(data) {
         }
         table.push(row);
     }
-    str += '```\n' + createTable(table) + '```\n';
+    str += '```\n' + createTable(table, { align: align }) + '```\n';
     return str;
 }
 
