@@ -26,15 +26,15 @@ async function update() {
 }
 
 function leaderboardString(data) {
-    let str = `Last updated at ${Tools.dateStr(new Date())}\n`;
-    const table = [ ['Username', 'Acct Value'] ];
-    const align = ['l', 'r'];
+    let str = `Last updated ${Tools.dateStr(new Date())}\n`;
+    const table = [ ['Rank', 'Username', 'Acct Value'] ];
+    const align = ['l', 'l', 'r'];
     for(const symbol in data.tickers) {
         table[0].push(symbol);
         align.push('r');
     }
     for(const trader of data.traders) {
-        const row = [trader.username.substring(0, trader.username.length-5), Price.format(trader.accountValue)];
+        const row = [`${trader.rank}.`, trader.username.substring(0, trader.username.length-5), Price.format(trader.accountValue)];
         for(const symbol in data.tickers) {
             if(trader.positions[symbol] != undefined) row.push(trader.positions[symbol].quantity);
             else row.push('');
