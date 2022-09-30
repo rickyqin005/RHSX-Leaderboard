@@ -15,13 +15,14 @@ const Tools = require('./utils/Tools');
 const createTable = require('text-table');
 
 async function update() {
-    const startTime = new Date();
+    const timerLabel = Tools.dateStr(new Date());
+    console.time(timerLabel);
     try {
         await message.edit(leaderboardString((await axios.get(URL)).data));
     } catch(error) {
         console.log(error);
     }
-    console.log(`updated leaderboard at ${Tools.dateStr(new Date())}, took ${new Date()-startTime}ms`);
+    console.timeEnd(timerLabel);
     setTimeout(update, REFRESH_RATE);
 }
 
@@ -29,15 +30,15 @@ function leaderboardString(data) {
     let str = `Last updated ${Tools.dateStr(new Date())}\n`;
     const table = [ ['Rank', 'Username', 'Acct Value'] ];
     const align = ['l', 'l', 'r'];
-    for(const symbol in data.tickers) {
-        table[0].push(symbol);
+    for(const ticker of data.tickers) {
+        table[0].push(ticker.id);
         align.push('r');
     }
     for(const trader of data.traders) {
         const row = [`${trader.rank}.`, trader.username.substring(0, trader.username.length-5), Price.format(trader.accountValue)];
-        for(const symbol in data.tickers) {
-            if(trader.positions[symbol] != undefined) row.push(trader.positions[symbol].quantity);
-            else row.push('');
+        for(const ticker of data.tickers) {
+            const position = trader.positions.find(pos => pos.ticker == ticker.id);
+            row.push((position != undefined) ? position.quantity : '');
         }
         table.push(row);
     }
